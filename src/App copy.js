@@ -23,11 +23,10 @@ class App extends React.Component {
     this.state = {
       num1: 0,
       num2: 0,
-      output: '0',
+      output: 0,
       dp: false,
       op: '',
-      opClick: false,
-      negative: false
+      opClick: false
     }
   }
   
@@ -43,55 +42,71 @@ class App extends React.Component {
       value: event.target.value
     });
   }
-  async clickNumber(num){
-    
-
-
-    //if equals button was last number clicked...
+  clickNumber(num){
+    let numin = 0
     if (this.state.op=='equals'){
-      await this.setState({
+      this.setState({
+        output: 0,
         num1: 0,
         num2: 0,
-        output: '0',
         dp: false,
         op: '',
-        opClick: false
-      });
+        opClick: false,
+      })
+      numin = 0
     }
-    //if not a leading 0 append the digit
-    if (this.state.output!=='0'){
-      await this.setState({
-        output: this.state.output+String(num),
-      });
+    //just pressed decimal point
+    else if (this.state.dp==true){
+      numin = this.state.output
     }
-    else{
-      //zero on display, 0 picked
-      if (num!=0){
-        await this.setState({
-          output: num,
-        });
+    //second number picked
+    else if (this.state.op=='add' || this.state.op=='subtract' || this.state.op=='multiply' || this.state.op=='divide'){
+      console.log('herre')
+      this.setState({
+        output: num,
+        num2: num,
+      //  num2: 0,
+       // dp: false,
+      })
+      //just clicked operation button
+      if (this.state.opClick){
+        numin = 0
+      }
+      else{
+        numin = this.state.output
       }
       
     }
-    //if an operation loaded add to num2
-    let op = this.state.op
-    if (op=='add' || op=='subtract' || op=='multiply' || op=='divide'){
-      await this.setState({
-        num2: Number(num),
-      });
+    else{
+      numin = this.state.output
     }
-
-    //negative stuff
-    if (this.state.negative==true){
-      await this.setState({
-        output: this.state.output*-1
+    
+    
+    if (num!=0){
+      numin = ""+numin+num
+      numin = Number(numin)
+    }
+    else{
+      if (numin!==0){
+        numin = ""+numin+num
+      }
+      
+    }
+    if (this.state.num1!=0){
+      this.setState({
+        num2: numin,
+        output: numin
       })
-      this.negative()
     }
+    else{
+      this.setState({output: numin})
+    }
+    
+    console.log(this.state)
   }
   clearAll(){
     this.setState({
-      output: '0',
+      output: 0,
       num1: 0,
       num2: 0,
       dp: false,
@@ -99,7 +114,6 @@ class App extends React.Component {
       negative: false,
       opClick: false
     })
-    document.getElementById('showMinus').style.display = "none";
   }
   decimal(){
     let numin = this.state.output
@@ -112,98 +126,106 @@ class App extends React.Component {
     }
     
   }
-  async negative(){
-    if (this.state.negative==false){
-      document.getElementById('showMinus').style.display = "block";
-      await this.setState({
-        negative: true
-      });
+  operation(op){
+    if (this.state.num1==0){
+      this.setState({
+        num1: this.state.output,
+        output: 0
+      })
     }
-    else{
-      document.getElementById('showMinus').style.display = "none";
-      await this.setState({
-        negative: false
-      });
-    }
-  }
-  async operation(op){
-    //THIS IS THE BIT THAT DOESNT WORK!!!!
-    //if subtract is selected (before first number, output 0 and operation selected)
-    if (op=='subtract' && this.state.output==='0' && this.state.op!=''){
-
-      this.negative()
-    }
-    else{
-      document.getElementById('showMinus').style.display = "none";
-      await this.setState({
-        negative: false
-      });
-      await this.setState({
-        op: op,
-        dp: false,
-      });
-    }
-
-
-    //if nothing in num1 add to num1 and make output 0
-    if (this.state.num1==0 && this.state.num2==0){
-      await this.setState({
-        num1: Number(this.state.output),
-        output: '0',
-      });
-    }
-    //if something in num1 add to num2 if empty
     else if (this.state.num1!=0 && this.state.num2==0){
-      await this.setState({
-        num2: Number(this.state.output),
-        output: '0',
-      });
+      this.setState({
+        num2: this.state.output,
+        output: 0
+      })
     }
-    else if (this.state.num1!=0 && this.state.num2!=0){
-      let output = this.calculate()
-      await this.setState({
-        output: '0',
-        num1: Number(output),
-      });
-      
+    //if 
+    if (op=='subtract' && this.state.num1==0){
+      this.setState({
+        negative: true,
+      })
+      document.getElementById('showMinus').style.display = "block";
     }
-
+    else if (op=='subtract' && this.state.num2==0){
+      this.setState({
+        negative: true,
+      })
+      document.getElementById('showMinus').style.display = "block";
+    }
+    else if(this.state.num1!=0){
+      this.equals(op)
+      document.getElementById('showMinus').style.display = "none";
+    }
+    else if(this.state.op!=''){
+      this.setState({
+        op: op,
+      })
+      document.getElementById('showMinus').style.display = "none";
+    }
+    else if(this.state.output!=0){
+      document.getElementById('showMinus').style.display = "none";
+      let num = this.state.output
+      if (this.state.negative){
+        num = num*-1
+      }
+      this.setState({
+        num1: num,
+        dp: false,
+        op: op,
+        negative: false,
+        opClick: true
+      })
+    }
+    
+    console.log(this.state)
   }
-  calculate(){
-    let op = this.state.op
-    let output = 0
+  equals(e){
+    console.log(this.state)
+    let calc = 0;
     let num1 = this.state.num1
     let num2 = this.state.num2
-    if (op=='add'){
-      output = num1+num2
+    if (this.state.negative){
+      num2 = num2*-1
     }
-    else if (op=='subtract'){
-      output = num1-num2
+    let op = this.state.op
+    if (op!=''){
+      if (op=='add'){
+        calc = num1+num2
+      }
+      else if (op=='subtract'){
+        calc = num1-num2
+      }
+      else if (op=='multiply'){
+        calc = num1*num2
+      }
+      else if (op=='divide'){
+        calc = num1/num2
+      }
     }
-    else if (op=='multiply'){
-      output = num1*num2
+    if (e){
+      console.log('heee')
+      this.setState({
+        num1: calc,
+        num2: 0,
+        dp: false,
+        output: 0,
+        op: e,
+        negative: false,
+        opClick: false
+      })
     }
-    else if (op=='divide'){
-      output = num1/num2
+    else{
+      this.setState({
+        num1: 0,
+        num2: 0,
+        dp: false,
+        output: calc,
+        op: 'equals',
+        negative: false,
+        opClick: false
+      })
     }
-    return output
     
-  }
-  async equals(e){
-    //if something in output add to num2
-    await this.setState({
-      num2: Number(this.state.output),
-
-    })
-    let output = this.calculate()
-    await this.setState({
-      num1: Number(output),
-      output: output,
-      num2: 0,
-      op: 'equals',
-      dp: false,
-      negative: false,
-    })
   }
   
   render() {
@@ -246,6 +268,7 @@ class App extends React.Component {
           </div>
         </div>
       </header>
+      
     </div>
     );
   }

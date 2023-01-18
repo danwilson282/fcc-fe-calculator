@@ -13,13 +13,65 @@
   }
 }
 
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.calculator {
+  min-height: 70vh;
+  margin-left: 25%;
+  margin-top: 10%;
+  height: 50%;
+  width: 50%;
+  displsay: flex;
+  padding-top: 1%;
+  align-items:flex-start;
   justify-content: center;
+  font-family: 'Orbitron', sans-serif;
   font-size: calc(10px + 2vmin);
+  background-color: black;
+}
+
+.display {
+  padding-right: 10px;
+  margin-left: 10px;
+  background-color:darkgrey;
+  width: 90%;
+  align-items: top;
+  justify-content: right;
+}
+
+.btn {
+  margin-top: 5px;
+  background-color:darkslategray;
+  border: 1px solid white;
+  color: white;
+  height: 50px;
+}
+
+.op {
+  background-color:rgb(112, 76, 182);
+}
+
+.minus {
+  display: none;
+}
+
+.equals {
+  background-color:forestgreen;
+}
+
+.empty {
+  display: none;
+}
+
+.clear {
+  background-color:coral;
+}
+
+.buttons {
+  margin-left: 25px;
+  padding-right: 30px;
+  margin-top: 10px;
+  align-items: center;
+  width: 90%;
+  color: white;
 }
 
 .App-link {
